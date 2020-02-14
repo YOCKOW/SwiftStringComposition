@@ -78,6 +78,10 @@ extension String {
       return lhs.indentLevel == rhs.indentLevel && lhs._line == rhs._line
     }
     
+    public static func += <S>(lhs: inout String.Line, rhs: S) where S: StringProtocol {
+      lhs._line.append(rhs)
+    }
+    
     public var debugDescription: String {
       return "Indent Level: \(self.indentLevel), Line: \(self._line.debugDescription)"
     }

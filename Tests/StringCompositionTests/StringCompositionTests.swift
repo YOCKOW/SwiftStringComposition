@@ -42,6 +42,12 @@ final class StringLineTests: XCTestCase {
     line.indentLevel = 2
     XCTAssertEqual(line.description(using: .spaces(count: 4)), "        Line\n")
   }
+  
+  func test_append() {
+    var line = String.Line("  Some", indent: .spaces(count: 2))
+    line? += " Line"
+    XCTAssertEqual(line?.payload, "Some Line")
+  }
 }
 
 final class StringCompositionTests: XCTestCase {

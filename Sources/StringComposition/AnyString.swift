@@ -18,6 +18,7 @@ internal struct _AnyString: Comparable,
                             Equatable,
                             Hashable {
   private class _StringBox {
+    func appending<S>(_ string: S) -> _StringBox where S: StringProtocol { _mustBeOverridden() }
     func compare<S>(_ other: S) -> ComparisonResult where S: StringProtocol { _mustBeOverridden() }
     func compare(_ other: _StringBox) -> ComparisonResult { _mustBeOverridden() }
     var debugDescription: String { _mustBeOverridden() }
@@ -32,6 +33,10 @@ internal struct _AnyString: Comparable,
     private var _base: T
     init(_ string: T) {
       self._base = string
+    }
+    
+    override func appending<S>(_ string: S) -> _StringBox where S: StringProtocol {
+      return _SomeString<String>(self._base.appending(string))
     }
     
     override func compare<S>(_ other: S) -> ComparisonResult where S: StringProtocol {
@@ -84,6 +89,10 @@ internal struct _AnyString: Comparable,
   
   static func <(lhs: _AnyString, rhs: _AnyString) -> Bool {
     return lhs._box.compare(rhs._box) == .orderedAscending
+  }
+  
+  mutating func append<S>(_ string: S) where S: StringProtocol {
+    self._box = self._box.appending(string)
   }
   
   var debugDescription: String {

@@ -16,6 +16,9 @@ extension StringProtocol {
   }
 }
 
+private func _validate<S>(_ expectedToBeSingleLine: S) -> Bool where S: StringProtocol {
+  return expectedToBeSingleLine.allSatisfy { !$0.isNewline }
+}
 
 extension String {
   /// Represents one line of string.
@@ -47,10 +50,6 @@ extension String {
     }
     
     public init?<S>(_ line: S, indentLevel: Int = 0) where S: StringProtocol {
-      func _validate<Str>(_ string: Str) -> Bool where Str: StringProtocol {
-        return string.allSatisfy { !$0.isNewline }
-      }
-      
       let trimmed = line._trimmed()
       guard _validate(trimmed) else { return nil }
       self._line = _AnyString(trimmed)
@@ -100,7 +99,14 @@ extension String {
     }
     
     public var payload: String {
-      return self._line.description
+      get {
+        return self._line.description
+      }
+      set {
+        let trimmed = newValue._trimmed()
+        guard _validate(trimmed) else { fatalError("Given string is not a single line.") }
+        self._line = _AnyString(trimmed)
+      }
     }
   }
 }

@@ -116,16 +116,14 @@ extension String {
 }
 
 extension String.Line {
-  private mutating func _shift(_ level: Int) {
-    self.indentLevel += level
-  }
-  
+  @inlinable
   public mutating func shiftLeft(_ level: Int = 1) {
     self.indentLevel -= level
   }
   
+  @inlinable
   public mutating func shiftRight(_ level: Int = 1) {
-    self._shift(level)
+    self.indentLevel += level
   }
 }
 

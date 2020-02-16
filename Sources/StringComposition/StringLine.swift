@@ -68,8 +68,8 @@ extension String {
     /// ```Swift
     /// let line = String.Line("  Some Line", indent: .spaces(2))!
     /// print(line.indentLevel) // -> Prints "1"
-    /// print(line.rawLine) // -> Prints "Some Line"
-    /// print(line.description(with: .spaces(4))) // -> Prints "    Some Line\n"
+    /// print(line.payload) // -> Prints "Some Line"
+    /// print(line.description(with: .spaces(4))) // -> Prints "    Some Line"
     /// ```
     public init?<S>(_ line: S, indent: String.Indent) where S: StringProtocol {
       let (raw, level) = line._trimmed()._dropIndentWithCounting(indent)
@@ -84,17 +84,6 @@ extension String {
       lhs._line.append(rhs)
     }
     
-    internal func _data(indent: String.Indent, encoding: String.Encoding, allowLossyConversion: Bool) -> Data? {
-      guard
-        let indentData = indent._data(indentLevel: self.indentLevel, encoding: encoding, allowLossyConversion: allowLossyConversion),
-        let lineData = self._line.data(using: encoding, allowLossyConversion: allowLossyConversion)
-        else {
-          return nil
-      }
-      let lf = Data([0x0A])
-      return indentData + lineData + lf
-    }
-    
     public var debugDescription: String {
       return "Indent Level: \(self.indentLevel), Line: \(self._line.debugDescription)"
     }
@@ -104,7 +93,7 @@ extension String {
     }
     
     public func description(using indent: String.Indent) -> String {
-      return indent.description(indentLevel: self.indentLevel) + self._line.description + "\n"
+      return indent.description(indentLevel: self.indentLevel) + self._line.description
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -124,6 +113,10 @@ extension String {
         guard _validate(trimmed) else { fatalError("Given string is not a single line.") }
         self._line = _AnyString(trimmed)
       }
+    }
+    
+    internal func _payloadData(using encoding: String.Encoding, allowLossyConversion: Bool) -> Data? {
+      return self._line.data(using: encoding, allowLossyConversion: allowLossyConversion)
     }
   }
 }

@@ -5,6 +5,8 @@
      See "LICENSE.txt" for more information.
  ************************************************************************************************ */
  
+import Foundation
+
 public typealias StringLine = String.Line
 
 extension StringProtocol {
@@ -80,6 +82,17 @@ extension String {
     
     public static func += <S>(lhs: inout String.Line, rhs: S) where S: StringProtocol {
       lhs._line.append(rhs)
+    }
+    
+    internal func _data(indent: String.Indent, encoding: String.Encoding, allowLossyConversion: Bool) -> Data? {
+      guard
+        let indentData = indent._data(indentLevel: self.indentLevel, encoding: encoding, allowLossyConversion: allowLossyConversion),
+        let lineData = self._line.data(using: encoding, allowLossyConversion: allowLossyConversion)
+        else {
+          return nil
+      }
+      let lf = Data([0x0A])
+      return indentData + lineData + lf
     }
     
     public var debugDescription: String {

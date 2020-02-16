@@ -11,6 +11,7 @@ import Darwin
 import Glibc
 #endif
 
+import Foundation
 import Ranges
 
 extension Set where Element == Int {
@@ -161,6 +162,28 @@ extension String {
     
     public var count: Int {
       return self._lines.count
+    }
+    
+    public func data(using encoding: String.Encoding, allowLossyConversion: Bool = false) -> Data? {
+      func _data(from line: String.Line) throws -> Data {
+        enum _Error: Error { case noData }
+        guard let data = line._data(indent: self.indent,
+                                    encoding: encoding,
+                                    allowLossyConversion: allowLossyConversion)
+          else {
+            throw _Error.noData
+        }
+        return data
+      }
+      
+      do {
+        let heuristicCapacity = self._lines.count * 128 // hmm...
+        return try self._lines.reduce(into: Data(capacity: heuristicCapacity)) {
+          $0.append(try _data(from: $1))
+        }
+      } catch {
+        return nil
+      }
     }
     
     public var debugDescription: String {

@@ -5,6 +5,8 @@
      See "LICENSE.txt" for more information.
  ************************************************************************************************ */
  
+import Foundation
+
 public typealias SpaceCharacter = Character.Space
 
 extension Character {
@@ -74,13 +76,17 @@ extension String {
       self.count = count
     }
 
+    internal func _data(indentLevel: Int, encoding: String.Encoding, allowLossyConversion: Bool) -> Data? {
+      return self.description(indentLevel: indentLevel).data(using: encoding, allowLossyConversion: allowLossyConversion)
+    }
+    
     public var description: String {
       return String(repeating: self.character.rawValue, count: self.count)
     }
 
     public func description(indentLevel: Int) -> String {
       precondition(indentLevel >= 0)
-      return String(repeating: self.description, count: indentLevel)
+      return String(repeating: self.character.rawValue, count: indentLevel * self.count)
     }
     
     public static func <(lhs: Indent, rhs: Indent) -> Bool {

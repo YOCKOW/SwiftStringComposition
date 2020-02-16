@@ -21,6 +21,7 @@ internal struct _AnyString: Comparable,
     func appending<S>(_ string: S) -> _StringBox where S: StringProtocol { _mustBeOverridden() }
     func compare<S>(_ other: S) -> ComparisonResult where S: StringProtocol { _mustBeOverridden() }
     func compare(_ other: _StringBox) -> ComparisonResult { _mustBeOverridden() }
+    func data(using encoding: String.Encoding, allowLossyConversion: Bool) -> Data? { _mustBeOverridden() }
     var debugDescription: String { _mustBeOverridden() }
     var description: String { _mustBeOverridden() }
     func hash(into hasher: inout Hasher) { _mustBeOverridden() }
@@ -50,6 +51,10 @@ internal struct _AnyString: Comparable,
       case .orderedAscending: return .orderedDescending
       case .orderedDescending: return .orderedAscending
       }
+    }
+    
+    override func data(using encoding: String.Encoding, allowLossyConversion: Bool) -> Data? {
+      return self._base.data(using: encoding, allowLossyConversion: allowLossyConversion)
     }
     
     override var debugDescription: String {
@@ -93,6 +98,10 @@ internal struct _AnyString: Comparable,
   
   mutating func append<S>(_ string: S) where S: StringProtocol {
     self._box = self._box.appending(string)
+  }
+  
+  func data(using encoding: String.Encoding, allowLossyConversion: Bool) -> Data? {
+    return self._box.data(using: encoding, allowLossyConversion: allowLossyConversion)
   }
   
   var debugDescription: String {

@@ -109,5 +109,20 @@ final class StringCompositionTests: XCTestCase {
     
     """)
   }
+  
+  func test_data() {
+    let string = """
+    ABC
+      DEF
+    """
+    var lines = String.Composition(string)
+    lines.indent = .spaces(count: 2)
+    
+    let data = lines.data(using: .utf8)
+    XCTAssertEqual(data, Data([
+      0x41, 0x42, 0x43, 0x0A,
+      0x20, 0x20, 0x44, 0x45, 0x46, 0x0A
+    ]))
+  }
 }
 

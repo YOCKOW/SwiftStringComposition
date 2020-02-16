@@ -92,10 +92,10 @@ extension String {
                 indent: indent)
     }
     
-    public init<S>(_ string: S, detectingIndent: Bool = true) where S: StringProtocol {
+    public init<S>(_ string: S, detectIndent: Bool = true) where S: StringProtocol {
       let rawLines = string.split(omittingEmptySubsequences: false) { $0.isNewline }
       
-      if !detectingIndent {
+      if !detectIndent {
         self.init(_checkedLines: rawLines, indent: nil)
         return
       }

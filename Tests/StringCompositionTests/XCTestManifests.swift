@@ -7,6 +7,7 @@ extension StringCompositionTests {
     // to regenerate.
     static let __allTests__StringCompositionTests = [
         ("test_data", test_data),
+        ("test_equality", test_equality),
         ("test_init", test_init),
         ("test_shift", test_shift),
     ]

@@ -74,7 +74,7 @@ extension String {
       
       self._lines = []
       
-      if _checkedLines.count == 0 {
+      if _checkedLines.count == 0 || (_checkedLines.count == 1 && _checkedLines.first!.isEmpty) {
         self.hasLastNewline = false
       } else {
         let lastLine = _checkedLines.last!

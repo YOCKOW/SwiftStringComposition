@@ -20,7 +20,7 @@ final class StringLineTests: XCTestCase {
       let line = String.Line("  Some Line\n", indent: .spaces(count: 2))
       XCTAssertEqual(line?.indentLevel, 1)
       XCTAssertEqual(line?.payload, "Some Line")
-      XCTAssertEqual(line?.description(using: .spaces(count: 4)), "    Some Line\n")
+      XCTAssertEqual(line?.description(using: .spaces(count: 4)), "    Some Line")
     }
   }
   
@@ -37,10 +37,16 @@ final class StringLineTests: XCTestCase {
   
   func test_description() {
     var line = String.Line("Line")
-    XCTAssertEqual(line.description, "Line\n")
+    XCTAssertEqual(line.description, "Line")
     
     line.indentLevel = 2
-    XCTAssertEqual(line.description(using: .spaces(count: 4)), "        Line\n")
+    XCTAssertEqual(line.description(using: .spaces(count: 4)), "        Line")
+  }
+  
+  func test_append() {
+    var line = String.Line("  Some", indent: .spaces(count: 2))
+    line? += " Line"
+    XCTAssertEqual(line?.payload, "Some Line")
   }
 }
 
@@ -59,8 +65,8 @@ final class StringCompositionTests: XCTestCase {
     let lines = String.Composition(string)
     
     enum _Error: Error { case unexpectedCount }
-    guard lines.count == 7 else { throw _Error.unexpectedCount }
-    XCTAssertEqual(lines.last!.isEmpty, true)
+    guard lines.count == 6 else { throw _Error.unexpectedCount }
+    XCTAssertTrue(lines.hasLastNewline)
     XCTAssertEqual(lines[3].indentLevel, 1)
     XCTAssertEqual(lines[4].payload, "return 0;")
   }
@@ -100,8 +106,22 @@ final class StringCompositionTests: XCTestCase {
     default:
         return
     }
-    
     """)
+  }
+  
+  func test_data() {
+    let string = """
+    ABC
+      DEF
+    """
+    var lines = String.Composition(string)
+    lines.indent = .spaces(count: 2)
+    
+    let data = lines.data(using: .utf8)
+    XCTAssertEqual(data, Data([
+      0x41, 0x42, 0x43, 0x0A,
+      0x20, 0x20, 0x44, 0x45, 0x46
+    ]))
   }
 }
 

@@ -6,6 +6,7 @@ extension StringCompositionTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__StringCompositionTests = [
+        ("test_data", test_data),
         ("test_init", test_init),
         ("test_shift", test_shift),
     ]
@@ -16,6 +17,7 @@ extension StringLineTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__StringLineTests = [
+        ("test_append", test_append),
         ("test_description", test_description),
         ("test_indentLevel", test_indentLevel),
         ("test_init", test_init),

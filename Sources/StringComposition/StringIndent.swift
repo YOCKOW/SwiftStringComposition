@@ -5,43 +5,7 @@
      See "LICENSE.txt" for more information.
  ************************************************************************************************ */
  
-public typealias SpaceCharacter = Character.Space
-
-extension Character {
-  /// Represents a whitespace character excluding new lines.
-  public struct Space: Comparable,
-                       Equatable,
-                       ExpressibleByExtendedGraphemeClusterLiteral,
-                       Hashable,
-                       RawRepresentable {
-    public typealias ExtendedGraphemeClusterLiteralType = Character
-    public typealias RawValue = Character
-    
-    /// U+0020
-    public static let space: Space = " "
-    
-    /// U+0009
-    public static let horizontalTab: Space = "\t"
-    
-    public private(set) var rawValue: Character
-    
-    /// Initialize with `character`.
-    /// Returns `nil` if `character` is not a whitespace character or is a newline.
-    public init?(rawValue character: Character) {
-      guard character.isWhitespace && !character.isNewline else { return nil }
-      self.rawValue = character
-    }
-    
-    public init(extendedGraphemeClusterLiteral value: Character) {
-      guard let space = Space(rawValue: value) else { fatalError("\"\(value)\" is not a whitespace.") }
-      self = space
-    }
-    
-    public static func <(lhs: Space, rhs: Space) -> Bool {
-      return lhs.rawValue < rhs.rawValue
-    }
-  }
-}
+import Foundation
 
 extension String {
   public struct Indent: Comparable,
@@ -80,7 +44,7 @@ extension String {
 
     public func description(indentLevel: Int) -> String {
       precondition(indentLevel >= 0)
-      return String(repeating: self.description, count: indentLevel)
+      return String(repeating: self.character.rawValue, count: indentLevel * self.count)
     }
     
     public static func <(lhs: Indent, rhs: Indent) -> Bool {

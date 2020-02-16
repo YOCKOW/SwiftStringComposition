@@ -11,6 +11,7 @@ import Darwin
 import Glibc
 #endif
 
+import Foundation
 import Ranges
 
 extension Set where Element == Int {
@@ -46,7 +47,14 @@ extension String {
                              RangeReplaceableCollection {
     private var _lines: [String.Line]
     
+    /// An indent that is used in `description`.
     public var indent: String.Indent = .default
+    
+    /// A newline character that is used in `description`.
+    public var newline: Character.Newline = .lineFeed
+    
+    /// A Boolean value that indicates whether the last newline exists or not.
+    public var hasLastNewline: Bool = true
     
     /// Creates a empty string.
     public init () {
@@ -65,8 +73,17 @@ extension String {
       let makeLine: (S) -> String.Line = (indent != nil) ? { String.Line($0, indent: indent!)! } : { String.Line($0, indentLevel: 0)! }
       
       self._lines = []
-      for rawLine in _checkedLines {
-        self._lines.append(makeLine(rawLine))
+      
+      if _checkedLines.count == 0 {
+        self.hasLastNewline = false
+      } else {
+        let lastLine = _checkedLines.last!
+        self.hasLastNewline = lastLine.isEmpty
+        
+        let rawLines = self.hasLastNewline ? _checkedLines.dropLast() : _checkedLines
+        for rawLine in rawLines {
+          self._lines.append(makeLine(rawLine))
+        }
       }
     }
     
@@ -163,6 +180,62 @@ extension String {
       return self._lines.count
     }
     
+    public func data(using encoding: String.Encoding, allowLossyConversion: Bool = false) -> Data? {
+      guard
+        let indentData = self.indent.description.data(using: encoding,
+                                                      allowLossyConversion: allowLossyConversion)
+        else {
+          return nil
+      }
+      
+      guard
+        let newlineData = "\(self.newline.rawValue)".data(using: encoding,
+                                                          allowLossyConversion: allowLossyConversion)
+        else {
+          return nil
+      }
+
+      func _appendIndentData(_ data: inout Data, indentLevel: Int) {
+        for _ in 0..<indentLevel { data.append(indentData) }
+      }
+      
+      func _appendPayloadData(_ data: inout Data, line: String.Line) throws {
+        enum _Error: Error { case conversionFailure }
+        guard
+          let payloadData = line._payloadData(using: encoding,
+                                              allowLossyConversion: allowLossyConversion)
+          else {
+            throw _Error.conversionFailure
+        }
+        data.append(payloadData)
+      }
+      
+      func _appendNewline(_ data: inout Data) {
+        data.append(newlineData)
+      }
+      
+      let heuristicCapacity = self._lines.count * 128
+      var result = Data(capacity: heuristicCapacity)
+      do {
+        if self._lines.count > 0 {
+          for line in self._lines.dropLast() {
+            _appendIndentData(&result, indentLevel: line.indentLevel)
+            try _appendPayloadData(&result, line: line)
+            _appendNewline(&result)
+          }
+          let lastLine = self._lines.last!
+          _appendIndentData(&result, indentLevel: lastLine.indentLevel)
+          try _appendPayloadData(&result, line: lastLine)
+          if self.hasLastNewline {
+            _appendNewline(&result)
+          }
+        }
+      } catch {
+        return nil
+      }
+      return result
+    }
+    
     public var debugDescription: String {
       func _log10(_ ii: Int) -> Int { return Int(floor(log10(Double(ii)))) }
       
@@ -173,13 +246,22 @@ extension String {
       for (ii, line) in self._lines.enumerated() {
         let lineNumber = ii + 1
         let spaces = String(repeating: " ", count: nWidths - _log10(lineNumber) - 1)
-        result += "\(spaces)L\(String(lineNumber, radix: 10)). \(line.description)"
+        result += "\(spaces)L\(String(lineNumber, radix: 10)). \(line.description(using: self.indent))"
+        
+        if ii < self._lines.count - 1 || self.hasLastNewline {
+          result += "\(self.newline)"
+        } else {
+          // No newline at the last...
+          result += "\u{1F6AB}\n"
+        }
       }
       return result
     }
     
     public var description: String {
-      return self._lines.map({ $0.description(using: self.indent) }).joined()
+      var result = self._lines.map({ $0.description(using: self.indent) }).joined(separator: "\(self.newline.rawValue)")
+      if self.hasLastNewline { result.append(self.newline.rawValue) }
+      return result
     }
     
     public var endIndex: Int {

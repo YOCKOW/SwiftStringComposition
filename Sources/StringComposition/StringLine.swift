@@ -5,6 +5,8 @@
      See "LICENSE.txt" for more information.
  ************************************************************************************************ */
  
+import Foundation
+
 public typealias StringLine = String.Line
 
 extension StringProtocol {
@@ -16,6 +18,9 @@ extension StringProtocol {
   }
 }
 
+private func _validate<S>(_ expectedToBeSingleLine: S) -> Bool where S: StringProtocol {
+  return expectedToBeSingleLine.allSatisfy { !$0.isNewline }
+}
 
 extension String {
   /// Represents one line of string.
@@ -47,10 +52,6 @@ extension String {
     }
     
     public init?<S>(_ line: S, indentLevel: Int = 0) where S: StringProtocol {
-      func _validate<Str>(_ string: Str) -> Bool where Str: StringProtocol {
-        return string.allSatisfy { !$0.isNewline }
-      }
-      
       let trimmed = line._trimmed()
       guard _validate(trimmed) else { return nil }
       self._line = _AnyString(trimmed)
@@ -67,8 +68,8 @@ extension String {
     /// ```Swift
     /// let line = String.Line("  Some Line", indent: .spaces(2))!
     /// print(line.indentLevel) // -> Prints "1"
-    /// print(line.rawLine) // -> Prints "Some Line"
-    /// print(line.description(with: .spaces(4))) // -> Prints "    Some Line\n"
+    /// print(line.payload) // -> Prints "Some Line"
+    /// print(line.description(with: .spaces(4))) // -> Prints "    Some Line"
     /// ```
     public init?<S>(_ line: S, indent: String.Indent) where S: StringProtocol {
       let (raw, level) = line._trimmed()._dropIndentWithCounting(indent)
@@ -77,6 +78,10 @@ extension String {
     
     public static func ==(lhs: String.Line, rhs: String.Line) -> Bool {
       return lhs.indentLevel == rhs.indentLevel && lhs._line == rhs._line
+    }
+    
+    public static func += <S>(lhs: inout String.Line, rhs: S) where S: StringProtocol {
+      lhs._line.append(rhs)
     }
     
     public var debugDescription: String {
@@ -88,7 +93,7 @@ extension String {
     }
     
     public func description(using indent: String.Indent) -> String {
-      return indent.description(indentLevel: self.indentLevel) + self._line.description + "\n"
+      return indent.description(indentLevel: self.indentLevel) + self._line.description
     }
     
     public func hash(into hasher: inout Hasher) {
@@ -100,22 +105,31 @@ extension String {
     }
     
     public var payload: String {
-      return self._line.description
+      get {
+        return self._line.description
+      }
+      set {
+        let trimmed = newValue._trimmed()
+        guard _validate(trimmed) else { fatalError("Given string is not a single line.") }
+        self._line = _AnyString(trimmed)
+      }
+    }
+    
+    internal func _payloadData(using encoding: String.Encoding, allowLossyConversion: Bool) -> Data? {
+      return self._line.data(using: encoding, allowLossyConversion: allowLossyConversion)
     }
   }
 }
 
 extension String.Line {
-  private mutating func _shift(_ level: Int) {
-    self.indentLevel += level
-  }
-  
+  @inlinable
   public mutating func shiftLeft(_ level: Int = 1) {
     self.indentLevel -= level
   }
   
+  @inlinable
   public mutating func shiftRight(_ level: Int = 1) {
-    self._shift(level)
+    self.indentLevel += level
   }
 }
 

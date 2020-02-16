@@ -50,6 +50,7 @@ public class SpecificCharacter:
 }
 
 public typealias SpaceCharacter = Character.Space
+public typealias NewlineCharacter = Character.Newline
 extension Character {
   /// Represents a whitespace character excluding new lines.
   public final class Space: SpecificCharacter {

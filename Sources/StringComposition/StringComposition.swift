@@ -74,7 +74,7 @@ extension String {
       
       self._lines = []
       
-      if _checkedLines.count == 0 {
+      if _checkedLines.count == 0 || (_checkedLines.count == 1 && _checkedLines.first!.isEmpty) {
         self.hasLastNewline = false
       } else {
         let lastLine = _checkedLines.last!
@@ -92,10 +92,10 @@ extension String {
                 indent: indent)
     }
     
-    public init<S>(_ string: S, detectingIndent: Bool = true) where S: StringProtocol {
+    public init<S>(_ string: S, detectIndent: Bool = true) where S: StringProtocol {
       let rawLines = string.split(omittingEmptySubsequences: false) { $0.isNewline }
       
-      if !detectingIndent {
+      if !detectIndent {
         self.init(_checkedLines: rawLines, indent: nil)
         return
       }

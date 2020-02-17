@@ -5,108 +5,79 @@
      See "LICENSE.txt" for more information.
  ************************************************************************************************ */
  
+import Foundation
 
-/// A type that represents a specific character.
-/// This protocol is declared as `public`, but is for internal use.
-public protocol SpecificCharacter:
+/// An abstract class that represents a specific character.
+public class SpecificCharacter:
   Comparable,
   ExpressibleByExtendedGraphemeClusterLiteral,
   Hashable,
   RawRepresentable
-  where  Self.ExtendedGraphemeClusterLiteralType == Character, Self.RawValue == Character
 {
-  static func expects(_ character: Character) -> Bool
-}
-
-extension SpecificCharacter {
-  public static func ==(lhs: Self, rhs: Self) -> Bool {
+  public typealias ExtendedGraphemeClusterLiteralType = Character
+  public typealias RawValue = Character
+  
+  /// Returns a Boolean value that indicates whether this type accept `character` or not.
+  public class func expects(_ character: Character) -> Bool { return false }
+  
+  public final class func ==(lhs: SpecificCharacter, rhs: SpecificCharacter) -> Bool {
     return lhs.rawValue == rhs.rawValue
   }
 
-  public static func <(lhs: Self, rhs: Self) -> Bool {
+  public final class func <(lhs: SpecificCharacter, rhs: SpecificCharacter) -> Bool {
     return lhs.rawValue < rhs.rawValue
   }
-
-  public static func <=(lhs: Self, rhs: Self) -> Bool {
-    return lhs.rawValue <= rhs.rawValue
-  }
-
-  public static func >(lhs: Self, rhs: Self) -> Bool {
-    return lhs.rawValue > rhs.rawValue
-  }
-
-  public static func >=(lhs: Self, rhs: Self) -> Bool {
-    return lhs.rawValue >= rhs.rawValue
-  }
-
+  
   public func hash(into hasher: inout Hasher) {
     hasher.combine(self.rawValue)
   }
-}
-
-private protocol _SpecificCharacter: SpecificCharacter {
-  override var rawValue: Character { get set }
-  init(validatedCharacter: Character)
-}
-
-extension _SpecificCharacter {
-  public init?(rawValue: Character) {
+  
+  public private(set) var rawValue: Character
+  
+  fileprivate init(_validatedCharacter: Character) {
+    self.rawValue = _validatedCharacter
+  }
+  
+  public required convenience init?(rawValue: Character) {
     guard Self.expects(rawValue) else { return nil }
-    self.init(validatedCharacter: rawValue)
+    self.init(_validatedCharacter: rawValue)
   }
-
-  public init(extendedGraphemeClusterLiteral value: Character) {
-    assert(Self.expects(value), "Invalid character for this type.")
-    self.init(validatedCharacter: value)
+  
+  public required convenience init(extendedGraphemeClusterLiteral: Character) {
+    assert(Self.expects(extendedGraphemeClusterLiteral), "Invalid Character.")
+    self.init(_validatedCharacter: extendedGraphemeClusterLiteral)
   }
 }
-
 
 public typealias SpaceCharacter = Character.Space
-extension Character {
-  /// Represents a whitespace character excluding new lines.
-  public struct Space: SpecificCharacter, _SpecificCharacter {
-    public static func expects(_ character: Character) -> Bool {
-      return character.isWhitespace && !character.isNewline
-    }
-
-    /// U+0020
-    public static let space: Space = "\u{0020}"
-
-    /// U+0009
-    public static let horizontalTab: Space = "\t"
-
-    public fileprivate(set) var rawValue: Character
-
-    init(validatedCharacter: Character) {
-      assert(Space.expects(validatedCharacter))
-      self.rawValue = validatedCharacter
-    }
-  }
-}
-
 public typealias NewlineCharacter = Character.Newline
 extension Character {
+  /// Represents a whitespace character excluding new lines.
+  public final class Space: SpecificCharacter {
+    public override class func expects(_ character: Character) -> Bool {
+      return character.isWhitespace && !character.isNewline
+    }
+    
+    /// U+0020
+    public static let space: Space = "\u{0020}"
+    
+    /// U+0009
+    public static let horizontalTab: Space = "\t"
+  }
+  
   /// Represents a newline character.
-  public struct Newline: _SpecificCharacter {
-    public static func expects(_ character: Character) -> Bool {
+  public final class Newline: SpecificCharacter {
+    public override class func expects(_ character: Character) -> Bool {
       return character.isNewline
     }
-
+    
     /// LF(U+000A)
     public static let lineFeed: Newline = "\u{000A}"
-
+    
     /// CR(U+000D)
     public static let carriageReturn: Newline = "\u{000D}"
-
-    /// CR+LF
+    
+    /// CR(U+000D)+LF(U+000A)
     public static let carriageReturnAndLineFeed: Newline = "\u{000D}\u{000A}"
-
-    public fileprivate(set) var rawValue: Character
-
-    init(validatedCharacter: Character) {
-      assert(Newline.expects(validatedCharacter))
-      self.rawValue = validatedCharacter
-    }
   }
 }

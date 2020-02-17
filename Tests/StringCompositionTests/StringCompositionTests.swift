@@ -71,6 +71,23 @@ final class StringCompositionTests: XCTestCase {
     XCTAssertEqual(lines[4].payload, "return 0;")
   }
   
+  func test_equality() {
+    var lines = String.Composition("")
+    XCTAssertEqual(lines.description, "")
+    
+    lines = String.Composition("\n")
+    XCTAssertEqual(lines.description, "\n")
+    
+    lines = String.Composition("\n\n")
+    XCTAssertEqual(lines.description, "\n\n")
+    
+    lines = String.Composition("\nA\n")
+    XCTAssertEqual(lines.description, "\nA\n")
+    
+    lines = String.Composition("A\n")
+    XCTAssertEqual(lines.description, "A\n")
+  }
+  
   func test_shift() {
     let string = """
     switch int {

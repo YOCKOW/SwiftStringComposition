@@ -84,6 +84,16 @@ extension String {
       lhs._line.append(rhs)
     }
     
+    /// The number of characters when the default indent is used.
+    public var count: Int {
+      return self.count(with: .default)
+    }
+    
+    /// The number of characters when the specified `indent` is used.
+    public func count(with indent: String.Indent) -> Int {
+      return indent.count * self.indentLevel + self._line.count
+    }
+    
     public var debugDescription: String {
       return "Indent Level: \(self.indentLevel), Line: \(self._line.debugDescription)"
     }
@@ -117,6 +127,13 @@ extension String {
     
     internal func _payloadData(using encoding: String.Encoding, allowLossyConversion: Bool) -> Data? {
       return self._line.data(using: encoding, allowLossyConversion: allowLossyConversion)
+    }
+    
+    /// The length of payload.
+    ///
+    /// The returned value is equal to `payload.count`, however, this property may be slightly faster.
+    public var payloadLength: Int {
+      return self._line.count
     }
   }
 }

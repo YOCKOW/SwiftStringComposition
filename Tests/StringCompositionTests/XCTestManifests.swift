@@ -22,6 +22,7 @@ extension StringLineTests {
         ("test_description", test_description),
         ("test_indentLevel", test_indentLevel),
         ("test_init", test_init),
+        ("test_length", test_length),
     ]
 }
 

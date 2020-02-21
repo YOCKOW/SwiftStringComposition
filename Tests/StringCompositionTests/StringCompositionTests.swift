@@ -48,6 +48,12 @@ final class StringLineTests: XCTestCase {
     line? += " Line"
     XCTAssertEqual(line?.payload, "Some Line")
   }
+  
+  func test_length() {
+    let line = String.Line("      とある文字列の行\n", indent: .spaces(count: 2))
+    XCTAssertEqual(line?.payloadLength, 8)
+    XCTAssertEqual(line?.count(with: .spaces(count: 4)), 20)
+  }
 }
 
 final class StringCompositionTests: XCTestCase {

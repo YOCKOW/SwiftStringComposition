@@ -26,14 +26,23 @@ jobs:
       uses: actions/cache@v1
       with:
         path: .build
-        key: build-${{ github.workspace }}-${{ runner.os }}-${{ matrix.swift-compat-ver }}-${{ hashFiles('Package.*') }}
+        key: build-${{ github.workspace }}-${{ runner.os }}-${{ matrix.swift-compat-ver }}-${{ hashFiles('Package.*') }}-${{ hashFiles('Sources/**/*.swift') }}
         restore-keys: |
+          build-${{ github.workspace }}-${{ runner.os }}-${{ matrix.swift-compat-ver }}-${{ hashFiles('Package.*') }}-
           build-${{ github.workspace }}-${{ runner.os }}-${{ matrix.swift-compat-ver }}-
           build-${{ github.workspace }}-${{ runner.os }}-
           build-${{ github.workspace }}-
     - uses: YOCKOW/Action-setup-swift@master
       with:
         swift-version: '5.1.4'
+    - name: Try to build products.
+      run: |
+        swift build --configuration debug -Xswiftc -swift-version -Xswiftc ${{ matrix.swift-compat-ver }}
+        swift build --configuration release -Xswiftc -enable-testing -Xswiftc -swift-version -Xswiftc ${{ matrix.swift-compat-ver }}
+      continue-on-error: true
+    - name: Clean ".build" directory if necessary.
+      if: failure()
+      run: rm -r .build
     - name: Test with debug mode.
       run: swift test --configuration debug -Xswiftc -swift-version -Xswiftc ${{ matrix.swift-compat-ver }}
     - name: Test with release mode.

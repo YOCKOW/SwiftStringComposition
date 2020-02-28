@@ -176,6 +176,10 @@ extension String {
       self._lines.append(contentsOf: newElements)
     }
     
+    public mutating func appendEmptyLine() {
+      self.append(.empty)
+    }
+    
     public var count: Int {
       return self._lines.count
     }

@@ -51,6 +51,8 @@ extension String {
       return lhs._line < rhs._line
     }
     
+    public static let empty = String.Line("", indentLevel: 0)!
+    
     public init?<S>(_ line: S, indentLevel: Int = 0) where S: StringProtocol {
       let trimmed = line._trimmed()
       guard _validate(trimmed) else { return nil }

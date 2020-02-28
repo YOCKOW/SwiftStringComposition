@@ -80,6 +80,19 @@ final class StringCompositionTests: XCTestCase {
     XCTAssertTrue(lines.hasLastNewline)
     XCTAssertEqual(lines[3].indentLevel, 1)
     XCTAssertEqual(lines[4].payload, "return 0;")
+    
+    do {
+      // Check indent-only line
+      let string = """
+      First
+        Second
+          
+          Under the empty line.
+      """
+      let lines = String.Composition(string)
+      XCTAssertTrue(lines[2].payload.isEmpty)
+      XCTAssertEqual(lines[2].indentLevel, 2)
+    }
   }
   
   func test_equality() {

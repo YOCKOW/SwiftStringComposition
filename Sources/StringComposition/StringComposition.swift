@@ -116,7 +116,7 @@ extension String {
         var ii = line.startIndex
         var result = 0
         while true {
-          guard line[ii] == space else { break }
+          guard ii < line.endIndex && line[ii] == space else { break }
           result += 1
           ii = line.index(after: ii)
         }

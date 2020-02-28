@@ -43,6 +43,11 @@ final class StringLineTests: XCTestCase {
     XCTAssertEqual(line.description(using: .spaces(count: 4)), "        Line")
   }
   
+  func test_equality() {
+    XCTAssertTrue(String.Line("Some Line").isEqual(to: "Some Line"))
+    XCTAssertTrue(String.Line("Some Line", indentLevel: 1)!.isEqual(to: "  Some Line", indent: .spaces(count: 2)))
+  }
+  
   func test_append() {
     var line = String.Line("  Some", indent: .spaces(count: 2))
     line? += " Line"

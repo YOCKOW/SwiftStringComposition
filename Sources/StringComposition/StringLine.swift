@@ -116,6 +116,14 @@ extension String {
       return self.indentLevel == 0 && self._line.isEmpty
     }
     
+    public func isEqual<S>(to string: S, indent: String.Indent? = nil) -> Bool where S: StringProtocol {
+      if let indent = indent {
+        return self.description(using: indent) == string
+      } else {
+        return self._line.isEqual(to: string)
+      }
+    }
+    
     public var payload: String {
       get {
         return self._line.description

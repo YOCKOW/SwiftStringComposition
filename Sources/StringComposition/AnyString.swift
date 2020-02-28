@@ -129,4 +129,7 @@ internal struct _AnyString: Comparable,
     return self._box.isEmpty
   }
   
+  func isEqual<S>(to string: S) -> Bool where S: StringProtocol {
+    return self._box.isEqual(to: string)
+  }
 }

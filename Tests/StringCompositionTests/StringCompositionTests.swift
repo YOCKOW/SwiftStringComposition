@@ -43,10 +43,21 @@ final class StringLineTests: XCTestCase {
     XCTAssertEqual(line.description(using: .spaces(count: 4)), "        Line")
   }
   
+  func test_equality() {
+    XCTAssertTrue(String.Line("Some Line").isEqual(to: "Some Line"))
+    XCTAssertTrue(String.Line("Some Line", indentLevel: 1)!.isEqual(to: "  Some Line", indent: .spaces(count: 2)))
+  }
+  
   func test_append() {
     var line = String.Line("  Some", indent: .spaces(count: 2))
     line? += " Line"
     XCTAssertEqual(line?.payload, "Some Line")
+  }
+  
+  func test_length() {
+    let line = String.Line("      とある文字列の行\n", indent: .spaces(count: 2))
+    XCTAssertEqual(line?.payloadProperties.length, 8)
+    XCTAssertEqual(line?.count(with: .spaces(count: 4)), 20)
   }
 }
 
@@ -69,6 +80,19 @@ final class StringCompositionTests: XCTestCase {
     XCTAssertTrue(lines.hasLastNewline)
     XCTAssertEqual(lines[3].indentLevel, 1)
     XCTAssertEqual(lines[4].payload, "return 0;")
+    
+    do {
+      // Check indent-only line
+      let string = """
+      First
+        Second
+          
+          Under the empty line.
+      """
+      let lines = String.Composition(string)
+      XCTAssertTrue(lines[2].payload.isEmpty)
+      XCTAssertEqual(lines[2].indentLevel, 2)
+    }
   }
   
   func test_equality() {

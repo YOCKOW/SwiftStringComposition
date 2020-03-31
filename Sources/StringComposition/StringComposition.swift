@@ -116,7 +116,7 @@ extension String {
         var ii = line.startIndex
         var result = 0
         while true {
-          guard line[ii] == space else { break }
+          guard ii < line.endIndex && line[ii] == space else { break }
           result += 1
           ii = line.index(after: ii)
         }
@@ -176,6 +176,10 @@ extension String {
       self._lines.append(contentsOf: newElements)
     }
     
+    public mutating func appendEmptyLine() {
+      self.append(.empty)
+    }
+    
     public var count: Int {
       return self._lines.count
     }
@@ -202,8 +206,8 @@ extension String {
       func _appendPayloadData(_ data: inout Data, line: String.Line) throws {
         enum _Error: Error { case conversionFailure }
         guard
-          let payloadData = line._payloadData(using: encoding,
-                                              allowLossyConversion: allowLossyConversion)
+          let payloadData = line.payloadProperties.data(using: encoding,
+                                                        allowLossyConversion: allowLossyConversion)
           else {
             throw _Error.conversionFailure
         }

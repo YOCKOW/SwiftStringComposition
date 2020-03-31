@@ -51,6 +51,8 @@ extension String {
       return lhs._line < rhs._line
     }
     
+    public static let empty = String.Line("", indentLevel: 0)!
+    
     public init?<S>(_ line: S, indentLevel: Int = 0) where S: StringProtocol {
       let trimmed = line._trimmed()
       guard _validate(trimmed) else { return nil }
@@ -84,6 +86,16 @@ extension String {
       lhs._line.append(rhs)
     }
     
+    /// The number of characters when the default indent is used.
+    public var count: Int {
+      return self.count(with: .default)
+    }
+    
+    /// The number of characters when the specified `indent` is used.
+    public func count(with indent: String.Indent) -> Int {
+      return indent.count * self.indentLevel + self._line.count
+    }
+    
     public var debugDescription: String {
       return "Indent Level: \(self.indentLevel), Line: \(self._line.debugDescription)"
     }
@@ -104,6 +116,14 @@ extension String {
       return self.indentLevel == 0 && self._line.isEmpty
     }
     
+    public func isEqual<S>(to string: S, indent: String.Indent? = nil) -> Bool where S: StringProtocol {
+      if let indent = indent {
+        return self.description(using: indent) == string
+      } else {
+        return self.payloadProperties.isEqual(to: string)
+      }
+    }
+    
     public var payload: String {
       get {
         return self._line.description
@@ -113,10 +133,6 @@ extension String {
         guard _validate(trimmed) else { fatalError("Given string is not a single line.") }
         self._line = _AnyString(trimmed)
       }
-    }
-    
-    internal func _payloadData(using encoding: String.Encoding, allowLossyConversion: Bool) -> Data? {
-      return self._line.data(using: encoding, allowLossyConversion: allowLossyConversion)
     }
   }
 }
@@ -133,3 +149,28 @@ extension String.Line {
   }
 }
 
+extension String.Line {
+  public var payloadProperties: PayloadProperties {
+    return .init(self)
+  }
+  
+  /// Wrapper of properties about `payload`.
+  public struct PayloadProperties {
+    private let _payload: _AnyString
+    fileprivate init(_ line: String.Line) {
+      self._payload = line._line
+    }
+    
+    public func data(using encoding: String.Encoding, allowLossyConversion: Bool = false) -> Data? {
+      return self._payload.data(using: encoding, allowLossyConversion: allowLossyConversion)
+    }
+    
+    public func isEqual<S>(to string: S) -> Bool where S: StringProtocol {
+      return self._payload.isEqual(to: string)
+    }
+    
+    public var length: Int {
+      return self._payload.count
+    }
+  }
+}

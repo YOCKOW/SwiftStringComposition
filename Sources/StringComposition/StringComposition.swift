@@ -206,8 +206,8 @@ extension String {
       func _appendPayloadData(_ data: inout Data, line: String.Line) throws {
         enum _Error: Error { case conversionFailure }
         guard
-          let payloadData = line._payloadData(using: encoding,
-                                              allowLossyConversion: allowLossyConversion)
+          let payloadData = line.payloadProperties.data(using: encoding,
+                                                        allowLossyConversion: allowLossyConversion)
           else {
             throw _Error.conversionFailure
         }

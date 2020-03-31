@@ -120,7 +120,7 @@ extension String {
       if let indent = indent {
         return self.description(using: indent) == string
       } else {
-        return self._line.isEqual(to: string)
+        return self.payloadProperties.isEqual(to: string)
       }
     }
     
@@ -133,17 +133,6 @@ extension String {
         guard _validate(trimmed) else { fatalError("Given string is not a single line.") }
         self._line = _AnyString(trimmed)
       }
-    }
-    
-    internal func _payloadData(using encoding: String.Encoding, allowLossyConversion: Bool) -> Data? {
-      return self._line.data(using: encoding, allowLossyConversion: allowLossyConversion)
-    }
-    
-    /// The length of payload.
-    ///
-    /// The returned value is equal to `payload.count`, however, this property may be slightly faster.
-    public var payloadLength: Int {
-      return self._line.count
     }
   }
 }
@@ -160,3 +149,28 @@ extension String.Line {
   }
 }
 
+extension String.Line {
+  public var payloadProperties: PayloadProperties {
+    return .init(self)
+  }
+  
+  /// Wrapper of properties about `payload`.
+  public struct PayloadProperties {
+    private let _payload: _AnyString
+    fileprivate init(_ line: String.Line) {
+      self._payload = line._line
+    }
+    
+    public func data(using encoding: String.Encoding, allowLossyConversion: Bool = false) -> Data? {
+      return self._payload.data(using: encoding, allowLossyConversion: allowLossyConversion)
+    }
+    
+    public func isEqual<S>(to string: S) -> Bool where S: StringProtocol {
+      return self._payload.isEqual(to: string)
+    }
+    
+    public var length: Int {
+      return self._payload.count
+    }
+  }
+}

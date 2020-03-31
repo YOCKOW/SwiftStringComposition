@@ -56,7 +56,7 @@ final class StringLineTests: XCTestCase {
   
   func test_length() {
     let line = String.Line("      とある文字列の行\n", indent: .spaces(count: 2))
-    XCTAssertEqual(line?.payloadLength, 8)
+    XCTAssertEqual(line?.payloadProperties.length, 8)
     XCTAssertEqual(line?.count(with: .spaces(count: 4)), 20)
   }
 }

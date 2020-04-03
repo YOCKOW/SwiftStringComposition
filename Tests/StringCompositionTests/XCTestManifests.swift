@@ -21,6 +21,7 @@ extension StringLineTests {
         ("test_append", test_append),
         ("test_description", test_description),
         ("test_equality", test_equality),
+        ("test_estimatedWidth", test_estimatedWidth),
         ("test_indentLevel", test_indentLevel),
         ("test_init", test_init),
         ("test_length", test_length),

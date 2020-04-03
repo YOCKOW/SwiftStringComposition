@@ -7,6 +7,7 @@
  
 import Foundation
 
+/// Represents one line of string.
 public typealias StringLine = String.Line
 
 extension StringProtocol {
@@ -163,6 +164,12 @@ extension String.Line {
     
     public func data(using encoding: String.Encoding, allowLossyConversion: Bool = false) -> Data? {
       return self._payload.data(using: encoding, allowLossyConversion: allowLossyConversion)
+    }
+    
+    /// String width when it is drawn using `East_Asian_Width` property.
+    /// See also `var estimatedWidth: Int { get }` of `Character` in `yExtensions`.
+    public var estimatedWidth: Int {
+      return self._payload.estimatedWidth
     }
     
     public func isEqual<S>(to string: S) -> Bool where S: StringProtocol {

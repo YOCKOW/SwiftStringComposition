@@ -54,6 +54,11 @@ final class StringLineTests: XCTestCase {
     XCTAssertEqual(line?.payload, "Some Line")
   }
   
+  func test_estimatedWidth() {
+    let line = String.Line("  日本🇯🇵は英語でJapan", indent: .spaces(count: 2))
+    XCTAssertEqual(line?.payloadProperties.estimatedWidth, 19)
+  }
+  
   func test_length() {
     let line = String.Line("      とある文字列の行\n", indent: .spaces(count: 2))
     XCTAssertEqual(line?.payloadProperties.length, 8)

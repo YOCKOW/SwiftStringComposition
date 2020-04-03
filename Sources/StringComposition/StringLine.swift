@@ -166,6 +166,12 @@ extension String.Line {
       return self._payload.data(using: encoding, allowLossyConversion: allowLossyConversion)
     }
     
+    /// String width when it is drawn using `East_Asian_Width` property.
+    /// See also `var estimatedWidth: Int { get }` of `Character` in `yExtensions`.
+    public var estimatedWidth: Int {
+      return self._payload.estimatedWidth
+    }
+    
     public func isEqual<S>(to string: S) -> Bool where S: StringProtocol {
       return self._payload.isEqual(to: string)
     }

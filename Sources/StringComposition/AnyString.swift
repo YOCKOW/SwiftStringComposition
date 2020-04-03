@@ -6,6 +6,7 @@
  ************************************************************************************************ */
  
 import Foundation
+import yExtensions
 
 private func _mustBeOverridden(function: StaticString = #function,
                                file: StaticString = #file, line: UInt = #line) -> Never {
@@ -25,6 +26,7 @@ internal struct _AnyString: Comparable,
     func data(using encoding: String.Encoding, allowLossyConversion: Bool) -> Data? { _mustBeOverridden() }
     var debugDescription: String { _mustBeOverridden() }
     var description: String { _mustBeOverridden() }
+    var estimatedWidth: Int { _mustBeOverridden() }
     func hash(into hasher: inout Hasher) { _mustBeOverridden() }
     var isEmpty: Bool { _mustBeOverridden() }
     func isEqual<S>(to string: S) -> Bool where S: StringProtocol { _mustBeOverridden() }
@@ -68,6 +70,10 @@ internal struct _AnyString: Comparable,
     
     override var description: String {
       return String(self._base)
+    }
+    
+    override var estimatedWidth: Int {
+      return self._base.estimatedWidth
     }
     
     override func hash(into hasher: inout Hasher) {
@@ -119,6 +125,10 @@ internal struct _AnyString: Comparable,
   
   var description: String {
     return self._box.description
+  }
+  
+  var estimatedWidth: Int {
+    self._box.estimatedWidth
   }
   
   func hash(into hasher: inout Hasher) {

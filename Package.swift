@@ -14,6 +14,7 @@ let package = Package(
   dependencies: [
     // Dependencies declare other packages that this package depends on.
     .package(url: "https://github.com/YOCKOW/SwiftRanges.git", from: "3.1.0"),
+    .package(url: "https://github.com/YOCKOW/ySwiftExtensions.git", from: "0.9.1"),
   ],
   targets: [
     // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -22,6 +23,7 @@ let package = Package(
       name: "StringComposition",
       dependencies: [
         "SwiftRanges",
+        "ySwiftExtensions",
       ]),
     .testTarget(
       name: "StringCompositionTests",
@@ -29,3 +31,12 @@ let package = Package(
   ]
 )
 
+import Foundation
+if ProcessInfo.processInfo.environment["YOCKOW_USE_LOCAL_PACKAGES"] != nil {
+  func localPath(with url: String) -> String {
+    guard let url = URL(string: url) else { fatalError("Unexpected URL.") }
+    let dirName = url.deletingPathExtension().lastPathComponent
+    return "../\(dirName)"
+  }
+  package.dependencies = package.dependencies.map { .package(path: localPath(with: $0.url)) }
+}

@@ -7,6 +7,7 @@
  
 import Foundation
 
+/// Represents one line of string.
 public typealias StringLine = String.Line
 
 extension StringProtocol {

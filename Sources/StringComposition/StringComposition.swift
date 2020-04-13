@@ -43,9 +43,16 @@ extension String {
                              CustomStringConvertible,
                              Equatable,
                              Hashable,
+                             MutableCollection,
                              RandomAccessCollection,
                              RangeReplaceableCollection {
-    private var _lines: [String.Line]
+    public typealias Element = String.Line
+    public typealias Index = Int
+    public typealias SubSequence = String.Composition
+    
+    // Q. Why is it of type `ArraySlice`, not `Array`?
+    // A. To make `SubSequence` equal to Self.
+    private var _lines: ArraySlice<String.Line>
     
     /// An indent that is used in `description`.
     public var indent: String.Indent = .default
@@ -55,6 +62,16 @@ extension String {
     
     /// A Boolean value that indicates whether the last newline exists or not.
     public var hasLastNewline: Bool = true
+    
+    private init(_slice: ArraySlice<String.Line>,
+                 indent: String.Indent,
+                 newline: Character.Newline,
+                 hasLastNewline: Bool) {
+      self._lines = _slice
+      self.indent = indent
+      self.newline = newline
+      self.hasLastNewline = hasLastNewline
+    }
     
     /// Creates a empty string.
     public init () {
@@ -153,12 +170,10 @@ extension String {
                 indent: String.Indent(SpaceCharacter(rawValue: indentSpace)!, count: width))
     }
     
-    public typealias Index = Int
-    
     public struct Iterator: IteratorProtocol {
       public typealias Element = String.Line
       
-      private var _iterator: Array<String.Line>.Iterator
+      private var _iterator: ArraySlice<String.Line>.Iterator
       fileprivate init(_ composition: String.Composition) {
         self._iterator = composition._lines.makeIterator()
       }
@@ -172,8 +187,35 @@ extension String {
       self._lines.append(newElement)
     }
     
+    public mutating func append<S>(_ newLine: S, indentLevel: Int) where S: StringProtocol {
+      guard let line = String.Line(newLine, indentLevel: indentLevel) else {
+        fatalError("Invalid string for line: \(newLine)")
+      }
+      self.append(line)
+    }
+    
+    public mutating func append(_ newLine: String.Line, increasingIndentLevel: Int) {
+      var newLine = newLine
+      newLine.indentLevel += increasingIndentLevel
+      self.append(newLine)
+    }
+    
+    public mutating func append(_ newLine: String.Line, decreasingIndentLevel: Int) {
+      self.append(newLine, increasingIndentLevel: -decreasingIndentLevel)
+    }
+    
     public mutating func append<S>(contentsOf newElements: S) where S: Sequence, S.Element == String.Line {
       self._lines.append(contentsOf: newElements)
+    }
+    
+    public mutating func append<S>(contentsOf newElements: S, increasingIndentLevel: Int) where S: Sequence, S.Element == String.Line {
+      for line in newElements {
+        self.append(line, increasingIndentLevel: increasingIndentLevel)
+      }
+    }
+    
+    public mutating func append<S>(contentsOf newElements: S, decreasingIndentLevel: Int) where S: Sequence, S.Element == String.Line {
+      self.append(contentsOf: newElements, increasingIndentLevel: -decreasingIndentLevel)
     }
     
     public mutating func appendEmptyLine() {
@@ -268,6 +310,21 @@ extension String {
       return result
     }
     
+    public func dropFirst(_ kk: Int) -> String.Composition {
+      return String.Composition(_slice: self._lines.dropFirst(kk),
+                                indent: self.indent,
+                                newline: self.newline,
+                                hasLastNewline: true)
+    }
+    
+    public func dropLast(_ kk: Int) -> String.Composition {
+      return String.Composition(_slice: self._lines.dropLast(kk),
+                                indent: self.indent,
+                                newline: self.newline,
+                                hasLastNewline: self.hasLastNewline)
+      
+    }
+    
     public var endIndex: Int {
       return self._lines.endIndex
     }
@@ -303,6 +360,13 @@ extension String {
       set {
         self._lines[position] = newValue
       }
+    }
+    
+    public subscript(bounds: Range<Int>) -> String.Composition {
+      return String.Composition(_slice: self._lines[bounds],
+                                indent: self.indent,
+                                newline: self.newline,
+                                hasLastNewline: ((bounds.upperBound == self.endIndex) ? self.hasLastNewline : true))
     }
   }
 }

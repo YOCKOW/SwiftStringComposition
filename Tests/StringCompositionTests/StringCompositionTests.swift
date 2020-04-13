@@ -117,6 +117,47 @@ final class StringCompositionTests: XCTestCase {
     XCTAssertEqual(lines.description, "A\n")
   }
   
+  func test_subsequence() {
+    let lines = String.Composition("""
+      Line 0
+      Line 1
+      Line 2
+      Line 3
+      Line 4
+      Line 5
+      Line 6
+      Line 7
+      Line 8
+      Line 9
+      """)
+    
+    let lines3to7 = lines[3..<7]
+    XCTAssertTrue(lines3to7.hasLastNewline)
+    XCTAssertEqual(lines3to7.count, 4)
+    XCTAssertEqual(lines3to7.startIndex, 3)
+    XCTAssertEqual(lines3to7.endIndex, 7)
+    XCTAssertEqual(lines3to7[5].payload, "Line 5")
+  }
+  
+  func test_append() {
+    var lines = String.Composition("Line 0")
+    lines.indent = .spaces(count: 2)
+    lines.newline = .lineFeed
+    
+    lines.append("Line 1", indentLevel: 1)
+    XCTAssertEqual(lines.description, """
+      Line 0
+        Line 1
+      """)
+    
+    lines.append(String.Line("Line 2", indentLevel: 1)!, increasingIndentLevel: 1)
+    XCTAssertEqual(lines.description, """
+    Line 0
+      Line 1
+        Line 2
+    """)
+  }
+  
   func test_shift() {
     let string = """
     switch int {

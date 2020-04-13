@@ -172,8 +172,35 @@ extension String {
       self._lines.append(newElement)
     }
     
+    public mutating func append<S>(_ newLine: S, indentLevel: Int) where S: StringProtocol {
+      guard let line = String.Line(newLine, indentLevel: indentLevel) else {
+        fatalError("Invalid string for line: \(newLine)")
+      }
+      self.append(line)
+    }
+    
+    public mutating func append(_ newLine: String.Line, increasingIndentLevel: Int) {
+      var newLine = newLine
+      newLine.indentLevel += increasingIndentLevel
+      self.append(newLine)
+    }
+    
+    public mutating func append(_ newLine: String.Line, decreasingIndentLevel: Int) {
+      self.append(newLine, increasingIndentLevel: -decreasingIndentLevel)
+    }
+    
     public mutating func append<S>(contentsOf newElements: S) where S: Sequence, S.Element == String.Line {
       self._lines.append(contentsOf: newElements)
+    }
+    
+    public mutating func append<S>(contentsOf newElements: S, increasingIndentLevel: Int) where S: Sequence, S.Element == String.Line {
+      for line in newElements {
+        self.append(line, increasingIndentLevel: increasingIndentLevel)
+      }
+    }
+    
+    public mutating func append<S>(contentsOf newElements: S, decreasingIndentLevel: Int) where S: Sequence, S.Element == String.Line {
+      self.append(contentsOf: newElements, increasingIndentLevel: -decreasingIndentLevel)
     }
     
     public mutating func appendEmptyLine() {

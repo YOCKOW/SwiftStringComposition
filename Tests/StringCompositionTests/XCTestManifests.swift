@@ -11,6 +11,7 @@ extension StringCompositionTests {
         ("test_equality", test_equality),
         ("test_init", test_init),
         ("test_shift", test_shift),
+        ("test_subsequence", test_subsequence),
     ]
 }
 

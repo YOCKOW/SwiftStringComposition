@@ -314,14 +314,14 @@ extension String {
       return String.Composition(_slice: self._lines.dropFirst(kk),
                                 indent: self.indent,
                                 newline: self.newline,
-                                hasLastNewline: true)
+                                hasLastNewline: self.hasLastNewline)
     }
     
     public func dropLast(_ kk: Int) -> String.Composition {
       return String.Composition(_slice: self._lines.dropLast(kk),
                                 indent: self.indent,
                                 newline: self.newline,
-                                hasLastNewline: self.hasLastNewline)
+                                hasLastNewline: true)
       
     }
     

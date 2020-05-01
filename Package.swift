@@ -5,6 +5,12 @@ import PackageDescription
 
 let package = Package(
   name: "StringComposition",
+  platforms: [
+    .macOS(.v10_15),
+    .iOS(.v13),
+    .watchOS(.v6),
+    .tvOS(.v13),
+  ],
   products: [
     // Products define the executables and libraries produced by a package, and make them visible to other packages.
     .library(name: "SwiftStringComposition",
@@ -14,7 +20,7 @@ let package = Package(
   dependencies: [
     // Dependencies declare other packages that this package depends on.
     .package(url: "https://github.com/YOCKOW/SwiftRanges.git", from: "3.1.0"),
-    .package(url: "https://github.com/YOCKOW/ySwiftExtensions.git", from: "0.9.1"),
+    .package(url: "https://github.com/YOCKOW/ySwiftExtensions.git", from: "1.0.0"),
   ],
   targets: [
     // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -28,7 +34,8 @@ let package = Package(
     .testTarget(
       name: "StringCompositionTests",
       dependencies: ["StringComposition"]),
-  ]
+  ],
+  swiftLanguageVersions: [.v5]
 )
 
 import Foundation

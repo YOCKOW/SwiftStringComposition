@@ -12,7 +12,6 @@ import Glibc
 #endif
 
 import Foundation
-import Ranges
 
 extension Set where Element == Int {
   fileprivate func _greatestCommonDivisor() -> Int {
@@ -373,14 +372,14 @@ extension String {
 
 extension String.Composition {
   private enum _Direction: Equatable { case left, right }
-  private mutating func _shift<R>( _ direction: _Direction, _ level: Int, in range: R) where R: GeneralizedRange, R.Bound == Index {
+  private mutating func _shift<R>( _ direction: _Direction, _ level: Int, in range: R) where R: RangeExpression, R.Bound == Index {
     let shift: (inout String.Line) -> Void = (direction == .left) ? { $0.shiftLeft(level) } : { $0.shiftRight(level) }
     for ii in range.relative(to: self._lines) {
       shift(&self._lines[ii])
     }
   }
   
-  public mutating func shiftLeft<R>(_ level: Int = 1, in range: R) where R: GeneralizedRange, R.Bound == Index {
+  public mutating func shiftLeft<R>(_ level: Int = 1, in range: R) where R: RangeExpression, R.Bound == Index {
     self._shift(.left, level, in: range)
   }
   
@@ -389,7 +388,7 @@ extension String.Composition {
     self.shiftLeft(level, in: self.startIndex..<self.endIndex)
   }
   
-  public mutating func shiftRight<R>(_ level: Int = 1, in range: R) where R: GeneralizedRange, R.Bound == Index {
+  public mutating func shiftRight<R>(_ level: Int = 1, in range: R) where R: RangeExpression, R.Bound == Index {
     self._shift(.right, level, in: range)
   }
   

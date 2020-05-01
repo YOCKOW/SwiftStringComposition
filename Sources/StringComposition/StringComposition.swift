@@ -86,7 +86,7 @@ extension String {
       self._lines = .init(repeating: repeatedValue, count: count)
     }
     
-    private init<S>(_checkedLines: [S], indent: String.Indent?) where S: StringProtocol {
+    private init<S>(_checkedLines: [S], indent: String.Indent?) where S: StringProtocol, S.SubSequence == Substring {
       let makeLine: (S) -> String.Line = (indent != nil) ? { String.Line($0, indent: indent!)! } : { String.Line($0, indentLevel: 0)! }
       
       self._lines = []
@@ -104,12 +104,12 @@ extension String {
       }
     }
     
-    public init<S>(_ string: S, indent: String.Indent) where S: StringProtocol {
+    public init<S>(_ string: S, indent: String.Indent) where S: StringProtocol, S.SubSequence == Substring {
       self.init(_checkedLines: string.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }),
                 indent: indent)
     }
     
-    public init<S>(_ string: S, detectIndent: Bool = true) where S: StringProtocol {
+    public init<S>(_ string: S, detectIndent: Bool = true) where S: StringProtocol, S.SubSequence == Substring {
       let rawLines = string.split(omittingEmptySubsequences: false) { $0.isNewline }
       
       if !detectIndent {
@@ -128,7 +128,7 @@ extension String {
         }
       }
       
-      func _countWidth<S>(_ space: Character, in line: S) -> Int where S: StringProtocol {
+      func _countWidth(_ space: Character, in line: Substring) -> Int {
         assert(!line.isEmpty)
         var ii = line.startIndex
         var result = 0
@@ -187,7 +187,7 @@ extension String {
       self._lines.append(newElement)
     }
     
-    public mutating func append<S>(_ newLine: S, indentLevel: Int) where S: StringProtocol {
+    public mutating func append<S>(_ newLine: S, indentLevel: Int) where S: StringProtocol, S.SubSequence == Substring {
       guard let line = String.Line(newLine, indentLevel: indentLevel) else {
         fatalError("Invalid string for line: \(newLine)")
       }

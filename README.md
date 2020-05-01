@@ -5,12 +5,12 @@
 
 # Requirements
 
-- Swift 5.1 (including compatibility mode for 4, 4.2)
-- macOS or Linux
+- Swift 5.1
+- macOS(>=10.15) or Linux
 
-## Dependency
+## Dependencies
 
-- [SwiftRanges](https://github.com/YOCKOW/SwiftRanges)
+![Dependencies](./dependencies.svg)
 
 
 # Usage

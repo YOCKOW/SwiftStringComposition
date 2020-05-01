@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="227pt" height="305pt" viewBox="0.00 0.00 227.43 304.74" xmlns:xlink="http://www.w3.org/1999/xlink">
+<style>
+a.external_repository_anchor {
+  fill: #0366d6;
+  text-decoration: underline;
+}
+</style><g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 300.74)">
+<title>StringCompositionDependenciesGraph</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-300.74 223.43,-300.74 223.43,4 -4,4" />
+
+<g id="node1" class="node">
+<title>Ranges</title>
+<ellipse fill="none" stroke="black" cx="67.29" cy="-25.46" rx="40.41" ry="25.41" />
+<text text-anchor="middle" x="67.29" y="-28.26" font-family="monospace" font-size="12px"><a href="https://github.com/YOCKOW/SwiftRanges.git" xlink:href="https://github.com/YOCKOW/SwiftRanges.git" class="external_repository_anchor">Ranges</a></text>
+<text text-anchor="middle" x="67.29" y="-14.26" font-family="monospace" font-size="12px">@3.1.1</text>
+</g>
+
+<g id="node2" class="node">
+<title>StringComposition</title>
+<polygon fill="none" stroke="black" points="122.36,-296.74 0.21,-296.74 0.21,-260.74 122.36,-260.74 122.36,-296.74" />
+<text text-anchor="middle" x="61.29" y="-274.54" font-family="monospace" font-size="12px">StringComposition</text>
+</g>
+
+<g id="edge1" class="edge">
+<title>StringComposition-&gt;Ranges</title>
+<path fill="none" stroke="black" d="M48.84,-260.5C42.37,-250.55 35.05,-237.52 31.29,-224.74 13.98,-165.93 8.29,-145.51 26.29,-86.91 29.62,-76.05 35.64,-65.39 42.06,-56.12" />
+<polygon fill="black" stroke="black" points="44.91,-58.16 48,-48.03 39.26,-54.01 44.91,-58.16" />
+</g>
+
+<g id="node4" class="node">
+<title>ySwiftExtensions</title>
+<ellipse fill="none" stroke="black" cx="121.29" cy="-199.28" rx="81.32" ry="25.41" />
+<text text-anchor="middle" x="121.29" y="-202.08" font-family="monospace" font-size="12px"><a href="https://github.com/YOCKOW/ySwiftExtensions.git" xlink:href="https://github.com/YOCKOW/ySwiftExtensions.git" class="external_repository_anchor">ySwiftExtensions</a></text>
+<text text-anchor="middle" x="121.29" y="-188.08" font-family="monospace" font-size="12px">@1.0.0</text>
+</g>
+
+<g id="edge2" class="edge">
+<title>StringComposition-&gt;ySwiftExtensions</title>
+<path fill="none" stroke="black" d="M74.6,-260.55C81.08,-252.19 89.07,-241.87 96.6,-232.15" />
+<polygon fill="black" stroke="black" points="99.42,-234.23 102.77,-224.18 93.88,-229.94 99.42,-234.23" />
+</g>
+
+<g id="node3" class="node">
+<title>UnicodeSupplement</title>
+<ellipse fill="none" stroke="black" cx="127.29" cy="-112.37" rx="92.29" ry="25.41" />
+<text text-anchor="middle" x="127.29" y="-115.17" font-family="monospace" font-size="12px"><a href="https://github.com/YOCKOW/SwiftUnicodeSupplement.git" xlink:href="https://github.com/YOCKOW/SwiftUnicodeSupplement.git" class="external_repository_anchor">UnicodeSupplement</a></text>
+<text text-anchor="middle" x="127.29" y="-101.17" font-family="monospace" font-size="12px">@1.0.0</text>
+</g>
+
+<g id="edge3" class="edge">
+<title>UnicodeSupplement-&gt;Ranges</title>
+<path fill="none" stroke="black" d="M110.25,-87.26C103.71,-78.01 96.16,-67.32 89.22,-57.5" />
+<polygon fill="black" stroke="black" points="91.96,-55.31 83.33,-49.16 86.24,-59.35 91.96,-55.31" />
+</g>
+
+<g id="edge4" class="edge">
+<title>ySwiftExtensions-&gt;UnicodeSupplement</title>
+<path fill="none" stroke="black" d="M123.02,-173.72C123.59,-165.71 124.23,-156.66 124.84,-148.05" />
+<polygon fill="black" stroke="black" points="128.34,-148.09 125.55,-137.87 121.36,-147.6 128.34,-148.09" />
+</g>
+</g>
+</svg>

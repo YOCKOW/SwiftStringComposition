@@ -6,14 +6,19 @@
  ************************************************************************************************ */
  
 import Foundation
+import yExtensions
 
 /// Represents one line of string.
 public typealias StringLine = String.Line
 
-extension StringProtocol {
-  fileprivate func _trimmed() -> Self.SubSequence {
+private extension StringProtocol where SubSequence == Substring {
+  var _forcedSubstring: Substring {
+    return self[self.startIndex..<self.endIndex]
+  }
+  
+  func _trimmed() -> Substring {
     guard let firstIndex = self.firstIndex(where: { !$0.isNewline }) else {
-      return self[self.endIndex..<self.endIndex]
+      return self._forcedSubstring
     }
     return self[firstIndex...self.lastIndex(where: { !$0.isNewline })!]
   }
@@ -33,7 +38,7 @@ extension String {
                       Hashable {
     public typealias StringLiteralType = String
     
-    private var _line: _AnyString
+    private var _line: Substring
     
     private var _indentLevel: Int = 0
     public var indentLevel: Int {
@@ -54,11 +59,17 @@ extension String {
     
     public static let empty = String.Line("", indentLevel: 0)!
     
-    public init?<S>(_ line: S, indentLevel: Int = 0) where S: StringProtocol {
+    private init<S>(_validatedLine: S, indentLevel: Int) where S: StringProtocol, S.SubSequence == Substring {
+      self._line = _validatedLine._forcedSubstring
+      self.indentLevel = indentLevel
+    }
+    
+    /// Initialize with a string.
+    /// `line` should contain only one line.
+    public init?<S>(_ line: S, indentLevel: Int = 0) where S: StringProtocol, S.SubSequence == Substring {
       let trimmed = line._trimmed()
       guard _validate(trimmed) else { return nil }
-      self._line = _AnyString(trimmed)
-      self.indentLevel = indentLevel
+      self.init(_validatedLine: trimmed, indentLevel: indentLevel)
     }
     
     public init(stringLiteral value: Self.StringLiteralType) {
@@ -74,7 +85,7 @@ extension String {
     /// print(line.payload) // -> Prints "Some Line"
     /// print(line.description(with: .spaces(4))) // -> Prints "    Some Line"
     /// ```
-    public init?<S>(_ line: S, indent: String.Indent) where S: StringProtocol {
+    public init?<S>(_ line: S, indent: String.Indent) where S: StringProtocol, S.SubSequence == Substring {
       let (raw, level) = line._trimmed()._dropIndentWithCounting(indent)
       self.init(raw, indentLevel: level)
     }
@@ -83,8 +94,10 @@ extension String {
       return lhs.indentLevel == rhs.indentLevel && lhs._line == rhs._line
     }
     
-    public static func += <S>(lhs: inout String.Line, rhs: S) where S: StringProtocol {
-      lhs._line.append(rhs)
+    public static func += <S>(lhs: inout String.Line, rhs: S) where S: StringProtocol, S.SubSequence == Substring {
+      let trimmed = rhs._trimmed()
+      precondition(_validate(trimmed), "Given string is not a single line.")
+      lhs._line.append(contentsOf: trimmed)
     }
     
     /// The number of characters when the default indent is used.
@@ -132,7 +145,7 @@ extension String {
       set {
         let trimmed = newValue._trimmed()
         guard _validate(trimmed) else { fatalError("Given string is not a single line.") }
-        self._line = _AnyString(trimmed)
+        self._line = trimmed
       }
     }
   }
@@ -157,7 +170,7 @@ extension String.Line {
   
   /// Wrapper of properties about `payload`.
   public struct PayloadProperties {
-    private let _payload: _AnyString
+    private let _payload: Substring
     fileprivate init(_ line: String.Line) {
       self._payload = line._line
     }
@@ -173,7 +186,7 @@ extension String.Line {
     }
     
     public func isEqual<S>(to string: S) -> Bool where S: StringProtocol {
-      return self._payload.isEqual(to: string)
+      return self._payload == string
     }
     
     public var length: Int {

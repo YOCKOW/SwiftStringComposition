@@ -12,7 +12,6 @@ import Glibc
 #endif
 
 import Foundation
-import Ranges
 
 extension Set where Element == Int {
   fileprivate func _greatestCommonDivisor() -> Int {
@@ -86,7 +85,7 @@ extension String {
       self._lines = .init(repeating: repeatedValue, count: count)
     }
     
-    private init<S>(_checkedLines: [S], indent: String.Indent?) where S: StringProtocol {
+    private init<S>(_checkedLines: [S], indent: String.Indent?) where S: StringProtocol, S.SubSequence == Substring {
       let makeLine: (S) -> String.Line = (indent != nil) ? { String.Line($0, indent: indent!)! } : { String.Line($0, indentLevel: 0)! }
       
       self._lines = []
@@ -104,12 +103,12 @@ extension String {
       }
     }
     
-    public init<S>(_ string: S, indent: String.Indent) where S: StringProtocol {
+    public init<S>(_ string: S, indent: String.Indent) where S: StringProtocol, S.SubSequence == Substring {
       self.init(_checkedLines: string.split(omittingEmptySubsequences: false, whereSeparator: { $0.isNewline }),
                 indent: indent)
     }
     
-    public init<S>(_ string: S, detectIndent: Bool = true) where S: StringProtocol {
+    public init<S>(_ string: S, detectIndent: Bool = true) where S: StringProtocol, S.SubSequence == Substring {
       let rawLines = string.split(omittingEmptySubsequences: false) { $0.isNewline }
       
       if !detectIndent {
@@ -128,7 +127,7 @@ extension String {
         }
       }
       
-      func _countWidth<S>(_ space: Character, in line: S) -> Int where S: StringProtocol {
+      func _countWidth(_ space: Character, in line: Substring) -> Int {
         assert(!line.isEmpty)
         var ii = line.startIndex
         var result = 0
@@ -187,7 +186,7 @@ extension String {
       self._lines.append(newElement)
     }
     
-    public mutating func append<S>(_ newLine: S, indentLevel: Int) where S: StringProtocol {
+    public mutating func append<S>(_ newLine: S, indentLevel: Int) where S: StringProtocol, S.SubSequence == Substring {
       guard let line = String.Line(newLine, indentLevel: indentLevel) else {
         fatalError("Invalid string for line: \(newLine)")
       }
@@ -373,14 +372,14 @@ extension String {
 
 extension String.Composition {
   private enum _Direction: Equatable { case left, right }
-  private mutating func _shift<R>( _ direction: _Direction, _ level: Int, in range: R) where R: GeneralizedRange, R.Bound == Index {
+  private mutating func _shift<R>( _ direction: _Direction, _ level: Int, in range: R) where R: RangeExpression, R.Bound == Index {
     let shift: (inout String.Line) -> Void = (direction == .left) ? { $0.shiftLeft(level) } : { $0.shiftRight(level) }
     for ii in range.relative(to: self._lines) {
       shift(&self._lines[ii])
     }
   }
   
-  public mutating func shiftLeft<R>(_ level: Int = 1, in range: R) where R: GeneralizedRange, R.Bound == Index {
+  public mutating func shiftLeft<R>(_ level: Int = 1, in range: R) where R: RangeExpression, R.Bound == Index {
     self._shift(.left, level, in: range)
   }
   
@@ -389,7 +388,7 @@ extension String.Composition {
     self.shiftLeft(level, in: self.startIndex..<self.endIndex)
   }
   
-  public mutating func shiftRight<R>(_ level: Int = 1, in range: R) where R: GeneralizedRange, R.Bound == Index {
+  public mutating func shiftRight<R>(_ level: Int = 1, in range: R) where R: RangeExpression, R.Bound == Index {
     self._shift(.right, level, in: range)
   }
   

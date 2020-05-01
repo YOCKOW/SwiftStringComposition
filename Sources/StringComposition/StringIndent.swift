@@ -53,7 +53,7 @@ extension String {
   }
 }
 
-extension StringProtocol {
+extension StringProtocol where SubSequence == Substring {
   /// Returns a Boolean value indicating whether the string begins with the specified indent.
   internal func _hasIndent(_ indent: String.Indent) -> Bool {
     return self.hasPrefix(indent.description)

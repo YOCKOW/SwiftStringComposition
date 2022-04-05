@@ -220,7 +220,7 @@ extension String {
     public mutating func appendEmptyLine() {
       self.append(.empty)
     }
-    
+
     public var count: Int {
       return self._lines.count
     }
@@ -360,12 +360,19 @@ extension String {
         self._lines[position] = newValue
       }
     }
-    
-    public subscript(bounds: Range<Int>) -> String.Composition {
-      return String.Composition(_slice: self._lines[bounds],
-                                indent: self.indent,
-                                newline: self.newline,
-                                hasLastNewline: ((bounds.upperBound == self.endIndex) ? self.hasLastNewline : true))
+
+    public subscript(bounds: Range<Index>) -> SubSequence {
+      get {
+        return String.Composition(
+          _slice: self._lines[bounds],
+          indent: self.indent,
+          newline: self.newline,
+          hasLastNewline: ((bounds.upperBound == self.endIndex) ? self.hasLastNewline : true)
+        )
+      }
+      set {
+        self._lines[bounds] = newValue._lines
+      }
     }
   }
 }

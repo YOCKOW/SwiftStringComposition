@@ -221,6 +221,10 @@ extension String {
       self.append(.empty)
     }
 
+    public mutating func replaceSubrange<C>(_ subrange: Range<Int>, with newElements: C) where C: Collection, String.Line == C.Element {
+      self._lines.replaceSubrange(subrange, with: newElements)
+    }
+
     public var count: Int {
       return self._lines.count
     }

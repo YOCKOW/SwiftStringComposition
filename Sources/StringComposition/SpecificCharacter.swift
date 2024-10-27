@@ -1,6 +1,6 @@
 /* *************************************************************************************************
  SpecificCharacter.swift
-   © 2020 YOCKOW.
+   © 2020,2024 YOCKOW.
      Licensed under MIT License.
      See "LICENSE.txt" for more information.
  ************************************************************************************************ */
@@ -8,12 +8,11 @@
 import Foundation
 
 /// An abstract class that represents a specific character.
-public class SpecificCharacter:
-  Comparable,
-  ExpressibleByExtendedGraphemeClusterLiteral,
-  Hashable,
-  RawRepresentable
-{
+public class SpecificCharacter: Comparable,
+                                ExpressibleByExtendedGraphemeClusterLiteral,
+                                Hashable,
+                                RawRepresentable,
+                                @unchecked Sendable {
   public typealias ExtendedGraphemeClusterLiteralType = Character
   public typealias RawValue = Character
   
@@ -53,7 +52,7 @@ public typealias SpaceCharacter = Character.Space
 public typealias NewlineCharacter = Character.Newline
 extension Character {
   /// Represents a whitespace character excluding new lines.
-  public final class Space: SpecificCharacter {
+  public final class Space: SpecificCharacter, @unchecked Sendable {
     public override class func expects(_ character: Character) -> Bool {
       return character.isWhitespace && !character.isNewline
     }
@@ -66,7 +65,7 @@ extension Character {
   }
   
   /// Represents a newline character.
-  public final class Newline: SpecificCharacter {
+  public final class Newline: SpecificCharacter, @unchecked Sendable {
     public override class func expects(_ character: Character) -> Bool {
       return character.isNewline
     }

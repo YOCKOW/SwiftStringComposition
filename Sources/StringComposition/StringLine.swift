@@ -1,6 +1,6 @@
 /* *************************************************************************************************
  StringLine.swift
-   © 2020 YOCKOW.
+   © 2020,2024 YOCKOW.
      Licensed under MIT License.
      See "LICENSE.txt" for more information.
  ************************************************************************************************ */
@@ -35,7 +35,8 @@ extension String {
                       CustomStringConvertible,
                       Equatable,
                       ExpressibleByStringInterpolation,
-                      Hashable {
+                      Hashable,
+                      Sendable {
     public typealias StringLiteralType = String
     
     private var _line: Substring

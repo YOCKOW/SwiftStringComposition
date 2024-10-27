@@ -1,6 +1,6 @@
 /* *************************************************************************************************
  StringComposition.swift
-   © 2020 YOCKOW.
+   © 2020,2024 YOCKOW.
      Licensed under MIT License.
      See "LICENSE.txt" for more information.
  ************************************************************************************************ */
@@ -44,7 +44,8 @@ extension String {
                              Hashable,
                              MutableCollection,
                              RandomAccessCollection,
-                             RangeReplaceableCollection {
+                             RangeReplaceableCollection,
+                             Sendable {
     public typealias Element = String.Line
     public typealias Index = Int
     public typealias SubSequence = String.Composition

@@ -1,6 +1,6 @@
 /* *************************************************************************************************
  StringIndent.swift
-   © 2020 YOCKOW.
+   © 2020,2024 YOCKOW.
      Licensed under MIT License.
      See "LICENSE.txt" for more information.
  ************************************************************************************************ */
@@ -11,7 +11,8 @@ extension String {
   public struct Indent: Comparable,
                         CustomStringConvertible,
                         Equatable,
-                        Hashable {
+                        Hashable,
+                        Sendable {
     public var character: Character.Space
     
     /// Returns an instance of `Indent` that represents the space whose widths is `count`.

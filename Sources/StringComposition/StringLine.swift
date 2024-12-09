@@ -119,7 +119,13 @@ extension String {
       return self.description(using: .default)
     }
     
-    public func description(using indent: String.Indent) -> String {
+    public func description(
+      using indent: String.Indent,
+      omitSpacesIfPayloadIsEmpty empty: Bool = false
+    ) -> String {
+      if empty && self._line.isEmpty {
+        return ""
+      }
       return indent.description(indentLevel: self.indentLevel) + self._line.description
     }
     

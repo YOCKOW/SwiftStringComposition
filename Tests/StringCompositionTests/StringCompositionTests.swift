@@ -45,6 +45,18 @@ import Testing
     #expect(line.description(using: .spaces(count: 4)) == "        Line")
   }
 
+  @Test func test_emptyLine() throws {
+    let line = try #require(String.Line("  ", indent: .spaces(count: 2)))
+    #expect(line.payload == "")
+    #expect(line.description(using: .spaces(count: 4)) == "    ")
+    #expect(
+      line.description(
+        using: .spaces(count: 4),
+        omitSpacesIfPayloadIsEmpty: true
+      ).isEmpty
+    )
+  }
+
   @Test func test_equality() {
     #expect(String.Line("Some Line").isEqual(to: "Some Line"))
     #expect(String.Line("Some Line", indentLevel: 1)!.isEqual(to: "  Some Line", indent: .spaces(count: 2)))
@@ -96,9 +108,14 @@ import Testing
           
           Under the empty line.
       """
-      let lines = String.Composition(string)
+      var lines = String.Composition(string)
       #expect(lines[2].payload.isEmpty)
       #expect(lines[2].indentLevel == 2)
+
+      #expect(lines.description == "First\n  Second\n    \n    Under the empty line.")
+      lines.omitSpacesInEmptyPayloadLine = true
+      #expect(lines.description == "First\n  Second\n\n    Under the empty line.")
+
     }
   }
 

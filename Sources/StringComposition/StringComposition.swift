@@ -62,7 +62,11 @@ extension String {
     
     /// A Boolean value that indicates whether the last newline exists or not.
     public var hasLastNewline: Bool = true
-    
+
+    /// A Boolean value that indicates whether or not spaces should be omitted in output
+    /// when `payload` is empty.
+    public var omitSpacesInEmptyPayloadLine: Bool = false
+
     private init(_slice: ArraySlice<String.Line>,
                  indent: String.Indent,
                  newline: Character.Newline,
@@ -231,59 +235,7 @@ extension String {
     }
     
     public func data(using encoding: String.Encoding, allowLossyConversion: Bool = false) -> Data? {
-      guard
-        let indentData = self.indent.description.data(using: encoding,
-                                                      allowLossyConversion: allowLossyConversion)
-        else {
-          return nil
-      }
-      
-      guard
-        let newlineData = "\(self.newline.rawValue)".data(using: encoding,
-                                                          allowLossyConversion: allowLossyConversion)
-        else {
-          return nil
-      }
-
-      func _appendIndentData(_ data: inout Data, indentLevel: Int) {
-        for _ in 0..<indentLevel { data.append(indentData) }
-      }
-      
-      func _appendPayloadData(_ data: inout Data, line: String.Line) throws {
-        enum _Error: Error { case conversionFailure }
-        guard
-          let payloadData = line.payloadProperties.data(using: encoding,
-                                                        allowLossyConversion: allowLossyConversion)
-          else {
-            throw _Error.conversionFailure
-        }
-        data.append(payloadData)
-      }
-      
-      func _appendNewline(_ data: inout Data) {
-        data.append(newlineData)
-      }
-      
-      let heuristicCapacity = self._lines.count * 128
-      var result = Data(capacity: heuristicCapacity)
-      do {
-        if self._lines.count > 0 {
-          for line in self._lines.dropLast() {
-            _appendIndentData(&result, indentLevel: line.indentLevel)
-            try _appendPayloadData(&result, line: line)
-            _appendNewline(&result)
-          }
-          let lastLine = self._lines.last!
-          _appendIndentData(&result, indentLevel: lastLine.indentLevel)
-          try _appendPayloadData(&result, line: lastLine)
-          if self.hasLastNewline {
-            _appendNewline(&result)
-          }
-        }
-      } catch {
-        return nil
-      }
-      return result
+      return self.description.data(using: encoding, allowLossyConversion: allowLossyConversion)
     }
     
     public var debugDescription: String {
@@ -309,8 +261,14 @@ extension String {
     }
     
     public var description: String {
-      var result = self._lines.map({ $0.description(using: self.indent) }).joined(separator: "\(self.newline.rawValue)")
-      if self.hasLastNewline { result.append(self.newline.rawValue) }
+      var result = self._lines.map({
+        $0.description(using: self.indent, omitSpacesIfPayloadIsEmpty: omitSpacesInEmptyPayloadLine)
+      }).joined(
+        separator: "\(self.newline.rawValue)"
+      )
+      if self.hasLastNewline {
+        result.append(self.newline.rawValue)
+      }
       return result
     }
     

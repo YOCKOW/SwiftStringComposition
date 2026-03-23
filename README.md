@@ -5,8 +5,8 @@
 
 # Requirements
 
-- Swift 5, 6
-- macOS(>=10.15) or Linux
+- Swift 6.2
+- macOS(>=13) or Linux
 
 ## Dependencies
 
